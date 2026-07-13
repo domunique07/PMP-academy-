@@ -1,9 +1,9 @@
 
-const STORE='pmpAcademy41';
+const STORE='pmpAcademy42';
 const S={curriculum:null,chapters:{},questions:{},activities:{},view:'dashboard',chapter:'chapter1',state:loadState()};
-function baseState(){return{theme:'dark',completedSections:{},checkpointResults:{},activityResults:{},answers:{},sessions:[],chapterMastery:{},lastLocation:null}}
+function baseState(){return{theme:'dark',completedSections:{},checkpointResults:{},activityResults:{},answers:{},sessions:[],chapterMastery:{},lastLocation:null,daily:{},streak:0,lastGoalDate:null}}
 function loadState(){try{return Object.assign(baseState(),JSON.parse(localStorage.getItem(STORE)||'{}'))}catch(e){return baseState()}}
-function save(){localStorage.setItem(STORE,JSON.stringify(S.state));renderProgress()}
+function save(){localStorage.setItem(STORE,JSON.stringify(S.state));renderProgress()} function today(){return new Date().toISOString().slice(0,10)} function dailyCount(){return S.state.daily[today()]||0} function addDailyPoint(){S.state.daily[today()]=(S.state.daily[today()]||0)+1;if(S.state.daily[today()]>=10&&S.state.lastGoalDate!==today()){const y=new Date();y.setDate(y.getDate()-1);const ys=y.toISOString().slice(0,10);S.state.streak=S.state.lastGoalDate===ys?S.state.streak+1:1;S.state.lastGoalDate=today();}}
 async function boot(){
  const D=window.PMP_DATA;
  if(!D) throw new Error('Embedded PMP data is missing.');
@@ -32,15 +32,7 @@ function show(v){
  window.scrollTo({top:0,behavior:'smooth'});
 }
 function sectionProgress(ch){const total=ch.sections.filter(s=>s.blocks&&s.blocks.length).length;const done=ch.sections.filter(s=>S.state.completedSections[`${ch.id}:${s.id}`]).length;return total?Math.round(done/total*100):0}
-function renderDashboard(){
- const c1=sectionProgress(S.chapters.chapter1),c2=sectionProgress(S.chapters.chapter2);
- const answered=Object.keys(S.state.answers).length; const correct=Object.values(S.state.answers).filter(x=>x.correct).length; const acc=answered?Math.round(correct/answered*100):0;
- document.getElementById('dashboard').innerHTML=`<div class="card hero"><div class="eyebrow">4.0 FOUNDATION</div><h2>Data-driven PMP curriculum</h2><p>Chapter 1 has been migrated. Chapter 2 has started in the guide's published order, beginning with Creating Value, Value Delivery Components, and Assessing Project Success.</p><button class="primary" data-open="chapter1">Continue Chapter 1</button></div>
- <div class="stats"><div class="card stat"><strong>${answered}</strong><span>questions answered</span></div><div class="card stat"><strong>${answered?acc+'%':'—'}</strong><span>accuracy</span></div><div class="card stat"><strong>${Object.keys(S.state.activityResults).length}</strong><span>activities completed</span></div></div>
- <div class="grid"><div class="card"><h3>Chapter 1</h3><div class="progressbar"><div style="width:${c1}%"></div></div><p>${c1}% complete</p><button class="secondary" data-open="chapter1">Open</button></div>
- <div class="card"><h3>Chapter 2</h3><div class="progressbar"><div style="width:${c2}%"></div></div><p>${c2}% complete • in development</p><button class="secondary" data-open="chapter2">Open</button></div></div>`;
- document.getElementById('dashboard').onclick=e=>{const b=e.target.closest('[data-open]');if(b){S.chapter=b.dataset.open;show('lesson')}}
-}
+function renderDashboard(){const c1=sectionProgress(S.chapters.chapter1),c2=sectionProgress(S.chapters.chapter2);const answered=Object.keys(S.state.answers).length,correct=Object.values(S.state.answers).filter(x=>x.correct).length,acc=answered?Math.round(correct/answered*100):0,daily=Math.min(dailyCount(),10);document.getElementById('dashboard').innerHTML=`<div class="card hero"><div class="eyebrow">4.2 DEVELOPMENT</div><h2>Your PMP study plan</h2><p>Continue the curriculum in PMBOK order, complete checkpoints, and strengthen Chapter 2.</p><button class="primary" data-open="${S.state.lastLocation?.chapter||'chapter1'}">Continue Studying</button></div><div class="card"><div class="goal-head"><div><span class="eyebrow">DAILY GOAL</span><h3>${daily} of 10 learning actions</h3></div><span class="badge">${S.state.streak}-day streak</span></div><div class="progressbar"><div style="width:${daily*10}%"></div></div><p class="muted">Checkpoints, activities, and practice answers count.</p></div><div class="stats"><div class="card stat"><strong>${answered}</strong><span>questions answered</span></div><div class="card stat"><strong>${answered?acc+'%':'—'}</strong><span>accuracy</span></div><div class="card stat"><strong>${Object.keys(S.state.activityResults).length}</strong><span>activities completed</span></div></div><div class="grid"><div class="card"><h3>Chapter 1</h3><div class="progressbar"><div style="width:${c1}%"></div></div><p>${c1}% complete</p><button class="secondary" data-open="chapter1">Open</button></div><div class="card"><h3>Chapter 2</h3><div class="progressbar"><div style="width:${c2}%"></div></div><p>${c2}% complete • all subchapters added</p><button class="secondary" data-open="chapter2">Open</button></div></div>`;document.getElementById('dashboard').onclick=e=>{const b=e.target.closest('[data-open]');if(b){S.chapter=b.dataset.open;show('lesson')}}}
 function renderCurriculum(){
  document.getElementById('curriculum').innerHTML=`<div class="card"><div class="eyebrow">GUIDE ORDER</div><h2>Curriculum</h2><p class="muted">The curriculum follows the uploaded PMBOK® Guide, Eighth Edition chapter and subsection order.</p></div><div class="grid">${S.curriculum.chapters.map(ch=>`<article class="card chapter-card ${ch.status==='planned'?'locked':''}"><span class="badge">${ch.status}</span><h3>${ch.number}. ${ch.title}</h3>${ch.sections?`<p class="muted">${ch.sections.join(' • ')}</p>`:''}${ch.id==='chapter1'||ch.id==='chapter2'?`<button class="secondary" data-open="${ch.id}">Open</button>`:''}</article>`).join('')}</div>`;
  document.getElementById('curriculum').onclick=e=>{const b=e.target.closest('[data-open]');if(b){S.chapter=b.dataset.open;show('lesson')}}
@@ -68,7 +60,7 @@ function renderBlock(b,ch,sec){
 }
 function answerCheckpoint(btn){
  const wrap=btn.closest('.checkpoint'),key=decodeURIComponent(wrap.dataset.cpKey),correct=Number(btn.dataset.cpChoice)===Number(btn.dataset.answer),ex=decodeURIComponent(btn.dataset.explanation);
- S.state.checkpointResults[key]={correct};save();wrap.querySelectorAll('button').forEach(x=>x.disabled=true);wrap.insertAdjacentHTML('beforeend',`<div class="feedback ${correct?'ok':'no'}">${correct?'Correct. ':'Not quite. '}${ex}</div>`);
+ S.state.checkpointResults[key]={correct};addDailyPoint();save();wrap.querySelectorAll('button').forEach(x=>x.disabled=true);wrap.insertAdjacentHTML('beforeend',`<div class="feedback ${correct?'ok':'no'}">${correct?'Correct. ':'Not quite. '}${ex}</div>`);
 }
 function findActivity(id){return [...S.activities.chapter1,...S.activities.chapter2].find(x=>x.id===id)}
 function renderActivity(id){
@@ -76,32 +68,16 @@ function renderActivity(id){
  if(a.type==='drag-match')return `<div class="block activity" data-activity="${id}"><h3>${a.title}</h3><p>${a.instructions}</p><div class="drag-bank">${a.items.map(i=>`<div class="drag-item" draggable="true" data-item="${i.id}">${i.label}</div>`).join('')}</div>${a.targets.map(t=>`<div class="drop-target" data-target="${t.id}"><strong>${t.text}</strong></div>`).join('')}<button class="primary wide" data-check-activity="${id}">Check Answers</button><div class="activity-feedback"></div></div>`;
  if(a.type==='sequence')return `<div class="block activity" data-activity="${id}"><h3>${a.title}</h3><p>${a.instructions}</p><div class="sequence-list">${a.items.map(i=>`<div class="sequence-item" draggable="true" data-item="${i.id}">${i.label}</div>`).join('')}</div><button class="primary wide" data-check-activity="${id}">Check Order</button><div class="activity-feedback"></div></div>`;
 }
-function setupDragDrop(){
- let dragged=null;
- document.querySelectorAll('[draggable=true]').forEach(el=>{
-  el.addEventListener('dragstart',()=>dragged=el);
-  el.addEventListener('touchstart',()=>dragged=el,{passive:true});
- });
- document.querySelectorAll('.drop-target,.sequence-list').forEach(t=>{
-  t.addEventListener('dragover',e=>{e.preventDefault();t.classList.add('over')});
-  t.addEventListener('dragleave',()=>t.classList.remove('over'));
-  t.addEventListener('drop',e=>{e.preventDefault();t.classList.remove('over');if(dragged)t.appendChild(dragged)});
- });
- // iPhone-friendly tap fallback: tap item, then target.
- let selected=null;
- document.querySelectorAll('.drag-item,.sequence-item').forEach(el=>el.addEventListener('click',()=>{selected=el;document.querySelectorAll('[draggable=true]').forEach(x=>x.style.outline='');el.style.outline='3px solid #f3b43d'}));
- document.querySelectorAll('.drop-target').forEach(t=>t.addEventListener('click',()=>{if(selected){t.appendChild(selected);selected.style.outline='';selected=null}}));
- document.querySelectorAll('.sequence-item').forEach(t=>t.addEventListener('click',()=>{if(selected&&selected!==t){t.parentElement.insertBefore(selected,t);selected.style.outline='';selected=null}}));
-}
+function setupDragDrop(){let selected=null,dragged=null;const clear=()=>document.querySelectorAll('[draggable=true]').forEach(x=>x.classList.remove('selected-drag'));const place=(item,target,before=null)=>{if(before)target.insertBefore(item,before);else target.appendChild(item);item.classList.add('placed');setTimeout(()=>item.classList.remove('placed'),350)};document.querySelectorAll('[draggable=true]').forEach(el=>{el.addEventListener('dragstart',e=>{dragged=el;e.dataTransfer.effectAllowed='move';el.classList.add('dragging')});el.addEventListener('dragend',()=>{el.classList.remove('dragging');dragged=null});el.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'){selected=el;clear();el.classList.add('selected-drag')}});el.addEventListener('click',()=>{selected=el;clear();el.classList.add('selected-drag')})});document.querySelectorAll('.drop-target').forEach(t=>{t.addEventListener('dragover',e=>{e.preventDefault();t.classList.add('over')});t.addEventListener('dragleave',()=>t.classList.remove('over'));t.addEventListener('drop',e=>{e.preventDefault();t.classList.remove('over');if(dragged)place(dragged,t)});t.addEventListener('click',()=>{if(selected){place(selected,t);clear();selected=null}})});document.querySelectorAll('.sequence-list').forEach(list=>{list.addEventListener('dragover',e=>{e.preventDefault();const after=[...list.querySelectorAll('.sequence-item:not(.dragging)')].find(x=>e.clientY<=x.getBoundingClientRect().top+x.offsetHeight/2);if(dragged)place(dragged,list,after||null)})});document.querySelectorAll('.sequence-item').forEach(t=>t.addEventListener('click',()=>{if(selected&&selected!==t){place(selected,t.parentElement,t);clear();selected=null}}))}
 function checkActivity(id){
  const a=findActivity(id),wrap=document.querySelector(`[data-activity="${id}"]`),fb=wrap.querySelector('.activity-feedback');let correct=true;
  if(a.type==='drag-match'){a.items.forEach(i=>{const el=wrap.querySelector(`[data-item="${i.id}"]`),target=el.closest('.drop-target');const ok=target&&target.dataset.target===i.target;if(target)target.classList.add(ok?'correct':'incorrect');if(!ok)correct=false})}
  if(a.type==='sequence'){const order=[...wrap.querySelectorAll('.sequence-item')].map(x=>x.dataset.item);correct=JSON.stringify(order)===JSON.stringify(a.correctOrder);wrap.querySelector('.sequence-list').classList.add(correct?'correct':'incorrect')}
- S.state.activityResults[id]={correct};save();fb.className=`activity-feedback feedback ${correct?'ok':'no'}`;fb.textContent=correct?'Correct — activity mastered.':'Not quite. Review the relationships and try again.';
+ S.state.activityResults[id]={correct};addDailyPoint();save();fb.className=`activity-feedback feedback ${correct?'ok':'no'}`;fb.textContent=correct?'Correct — activity mastered.':'Not quite. Review the relationships and try again.';
 }
 function renderPractice(){
  const qs=S.questions[S.chapter]||[];document.getElementById('practice').innerHTML=`<div class="card"><div class="eyebrow">PRACTICE</div><h2>${S.chapters[S.chapter].title}</h2><p>${qs.length} questions available in this development build.</p></div><div id="qbox">${qs.slice(0,20).map((q,i)=>`<div class="card question" data-qid="${q.id}"><span class="badge">${q.section||q.topic}</span><h3>${i+1}. ${q.q}</h3>${q.choices.map((c,j)=>`<button class="choice" data-choice="${j}">${c}</button>`).join('')}<div class="qfeedback"></div></div>`).join('')}</div>`;
- document.getElementById('qbox').onclick=e=>{const b=e.target.closest('.choice');if(!b)return;const card=b.closest('.question');if(card.dataset.locked)return;card.dataset.locked='1';const q=qs.find(x=>String(x.id)===card.dataset.qid),picked=Number(b.dataset.choice),correct=picked===q.answer;card.querySelectorAll('.choice').forEach((x,i)=>{x.disabled=true;if(i===q.answer)x.classList.add('correct');else if(i===picked)x.classList.add('incorrect')});card.querySelector('.qfeedback').innerHTML=`<div class="feedback ${correct?'ok':'no'}">${correct?'Correct. ':'Incorrect. '}${q.explanation}</div>`;S.state.answers[`${S.chapter}:${q.id}`]={correct,picked};save()}
+ document.getElementById('qbox').onclick=e=>{const b=e.target.closest('.choice');if(!b)return;const card=b.closest('.question');if(card.dataset.locked)return;card.dataset.locked='1';const q=qs.find(x=>String(x.id)===card.dataset.qid),picked=Number(b.dataset.choice),correct=picked===q.answer;card.querySelectorAll('.choice').forEach((x,i)=>{x.disabled=true;if(i===q.answer)x.classList.add('correct');else if(i===picked)x.classList.add('incorrect')});card.querySelector('.qfeedback').innerHTML=`<div class="feedback ${correct?'ok':'no'}">${correct?'Correct. ':'Incorrect. '}${q.explanation}</div>`;S.state.answers[`${S.chapter}:${q.id}`]={correct,picked};addDailyPoint();save()}
 }
 function renderProgress(){
  const answered=Object.keys(S.state.answers).length,correct=Object.values(S.state.answers).filter(x=>x.correct).length,acc=answered?Math.round(correct/answered*100):0;
