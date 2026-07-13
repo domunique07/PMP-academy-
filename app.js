@@ -1,20 +1,24 @@
 
-const PATH='./'; const STORE='pmpAcademy4';
+const STORE='pmpAcademy41';
 const S={curriculum:null,chapters:{},questions:{},activities:{},view:'dashboard',chapter:'chapter1',state:loadState()};
 function baseState(){return{theme:'dark',completedSections:{},checkpointResults:{},activityResults:{},answers:{},sessions:[],chapterMastery:{},lastLocation:null}}
 function loadState(){try{return Object.assign(baseState(),JSON.parse(localStorage.getItem(STORE)||'{}'))}catch(e){return baseState()}}
 function save(){localStorage.setItem(STORE,JSON.stringify(S.state));renderProgress()}
-async function getJSON(url){const r=await fetch(PATH+url);if(!r.ok)throw new Error(url);return r.json()}
 async function boot(){
- S.curriculum=await getJSON('data/curriculum.json');
- for(const id of ['chapter1','chapter2']){
-  S.chapters[id]=await getJSON(`chapters/${id}.json`);
-  S.questions[id]=(await getJSON(`questions/${id}.json`)).questions;
-  S.activities[id]=(await getJSON(`activities/${id}.json`)).activities;
- }
- renderNav(); show('dashboard');
+ const D=window.PMP_DATA;
+ if(!D) throw new Error('Embedded PMP data is missing.');
+ S.curriculum=D.curriculum;
+ S.chapters=D.chapters;
+ S.questions=D.questions;
+ S.activities=D.activities;
+ renderNav();
+ show('dashboard');
  document.body.classList.toggle('dark',S.state.theme==='dark');
- document.getElementById('theme').onclick=()=>{S.state.theme=S.state.theme==='dark'?'light':'dark';document.body.classList.toggle('dark',S.state.theme==='dark');save()}
+ document.getElementById('theme').onclick=()=>{
+   S.state.theme=S.state.theme==='dark'?'light':'dark';
+   document.body.classList.toggle('dark',S.state.theme==='dark');
+   save();
+ };
 }
 function renderNav(){
  const nav=document.getElementById('nav');
@@ -104,4 +108,4 @@ function renderProgress(){
  document.getElementById('progress').innerHTML=`<div class="stats"><div class="card stat"><strong>${answered}</strong><span>answered</span></div><div class="card stat"><strong>${answered?acc+'%':'—'}</strong><span>accuracy</span></div><div class="card stat"><strong>${Object.keys(S.state.checkpointResults).length}</strong><span>checkpoints</span></div></div><div class="card"><h3>Chapter progress</h3><p>Chapter 1: ${sectionProgress(S.chapters.chapter1)}%</p><div class="progressbar"><div style="width:${sectionProgress(S.chapters.chapter1)}%"></div></div><p>Chapter 2: ${sectionProgress(S.chapters.chapter2)}%</p><div class="progressbar"><div style="width:${sectionProgress(S.chapters.chapter2)}%"></div></div></div><button class="danger wide" id="reset">Reset development progress</button>`;
  const r=document.getElementById('reset');if(r)r.onclick=()=>{if(confirm('Reset all Version 4.0 development progress?')){localStorage.removeItem(STORE);location.reload()}}
 }
-boot().catch(err=>{document.body.innerHTML=`<main style="padding:30px"><h1>Unable to load PMP Academy</h1><p>${err.message}</p><p>Confirm all data, chapters, questions, and activities folders were uploaded.</p></main>`});
+boot().catch(err=>{document.body.innerHTML=`<main style="padding:30px"><h1>Unable to load PMP Academy</h1><p>${err.message}</p></main>`});
