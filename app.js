@@ -1,19 +1,59 @@
 
 (function(){
 'use strict';
-const BANK=window.QUESTION_BANK,CARDS=window.FLASHCARDS,KEY='pmpAcademyV30';
+const BANK=window.QUESTION_BANK,CARDS=window.FLASHCARDS,KEY='pmpAcademy';
 const today=()=>new Date().toISOString().slice(0,10);
 const empty=()=>({theme:'dark',lessonComplete:false,totalAnswered:0,totalCorrect:0,sessions:[],topics:{},reviewIds:[],flaggedIds:[],daily:{},streak:0,lastGoalDate:null,mastered:[],cardReviews:0,achievements:[]});
 let old=null;try{old=JSON.parse(localStorage.getItem('pmpAcademyV20')||localStorage.getItem('pmpAcademyV12')||'null')}catch(e){}
 let state=load();if(old&&state.totalAnswered===0){state=Object.assign(empty(),old);saveRaw()}
+
+(function cleanupLegacyKeys(){
+ const legacy=['pmpAcademyV11','pmpAcademyV12','pmpAcademyV20','pmpAcademyV21','pmpAcademyV30'];
+ legacy.forEach(k=>{if(k!==KEY)localStorage.removeItem(k)});
+})();
+
 let session=null,mode='custom',cardOrder=CARDS.map((_,i)=>i),cardPos=0,cardBack=false,strikeMode=false;
-function load(){try{return Object.assign(empty(),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return empty()}}
-function saveRaw(){localStorage.setItem(KEY,JSON.stringify(state))}
+function sanitize(raw){
+ const s=Object.assign(empty(),raw||{});
+ s.sessions=Array.isArray(s.sessions)?s.sessions.filter(x=>{
+   const total=Number(x.total),correct=Number(x.correct),score=Number(x.score);
+   return Number.isFinite(total)&&total>0&&Number.isFinite(correct)&&correct>=0&&correct<=total&&Number.isFinite(score)&&score>=0&&score<=100;
+ }):[];
+ s.totalAnswered=Math.max(0,Number(s.totalAnswered)||0);
+ s.totalCorrect=Math.max(0,Math.min(Number(s.totalCorrect)||0,s.totalAnswered));
+ s.reviewIds=Array.isArray(s.reviewIds)?[...new Set(s.reviewIds.filter(Number.isInteger))]:[];
+ s.flaggedIds=Array.isArray(s.flaggedIds)?[...new Set(s.flaggedIds.filter(Number.isInteger))]:[];
+ s.mastered=Array.isArray(s.mastered)?[...new Set(s.mastered.filter(Number.isInteger))]:[];
+ s.achievements=Array.isArray(s.achievements)?[...new Set(s.achievements)]:[];
+ s.topics=(s.topics&&typeof s.topics==='object')?s.topics:{};
+ Object.keys(s.topics).forEach(k=>{
+   const d=s.topics[k]||{};
+   d.answered=Math.max(0,Number(d.answered)||0);
+   d.correct=Math.max(0,Math.min(Number(d.correct)||0,d.answered));
+   s.topics[k]=d;
+ });
+ return s;
+}
+function load(){
+ try{return sanitize(JSON.parse(localStorage.getItem(KEY)||'{}'))}
+ catch(e){return empty()}
+}
+function saveRaw(){state=sanitize(state);localStorage.setItem(KEY,JSON.stringify(state))}
 function save(){saveRaw();renderAll()}
+function purgeAllProgress(){
+ const keys=[];
+ for(let i=0;i<localStorage.length;i++)keys.push(localStorage.key(i));
+ keys.filter(k=>k&&(/^pmpAcademy/i.test(k)||/^pmp-academy/i.test(k))).forEach(k=>localStorage.removeItem(k));
+ state=empty();
+ localStorage.setItem(KEY,JSON.stringify(state));
+ try{
+   if('caches' in window)caches.keys().then(names=>Promise.all(names.filter(n=>n.startsWith('pmp-academy')).map(n=>caches.delete(n))));
+ }catch(e){}
+}
 function pct(a,b){return b?Math.round(a/b*100):0}
-function best(){return state.sessions.length?Math.max(...state.sessions.map(x=>x.score)):null}
+function best(){const valid=state.sessions.map(x=>Number(x.score)).filter(x=>Number.isFinite(x)&&x>=0&&x<=100);return valid.length?Math.max(...valid):null}
 function accuracy(){return pct(state.totalCorrect,state.totalAnswered)}
-function readiness(){const a=accuracy(),lesson=state.lessonComplete?15:0,sessions=Math.min(state.sessions.length*4,20),mastery=Math.min(state.mastered.length*2,20);return Math.min(100,Math.round(a*.45+lesson+sessions+mastery))}
+function readiness(){const a=Math.max(0,Math.min(100,accuracy())),lesson=state.lessonComplete?15:0,sessions=Math.min(state.sessions.length*4,20),mastery=Math.min(state.mastered.length*2,20);return Math.max(0,Math.min(100,Math.round(a*.45+lesson+sessions+mastery)))}
 function currentDaily(){return state.daily[today()]||0}
 function haptic(){try{if(navigator.vibrate)navigator.vibrate(20)}catch(e){}}
 function confetti(){const box=document.getElementById('confetti');for(let i=0;i<60;i++){const p=document.createElement('i');p.className='confetti-piece';p.style.left=Math.random()*100+'%';p.style.animationDelay=Math.random()*.5+'s';p.style.background=['#843db6','#551f7c','#f1b93a','#48a36b'][i%4];box.appendChild(p);setTimeout(()=>p.remove(),2200)}}
@@ -141,7 +181,12 @@ function checkAchievements(){if(state.totalAnswered>=10)unlock('First 10');if(st
 function renderAchievements(){const all=[['First 10','Answer 10 questions'],['50 Questions','Answer 50 questions'],['90% Club','Score at least 90%'],['Card Master','Master 5 flashcards'],['3-Day Streak','Complete the daily goal 3 days'],['Lesson Complete','Complete Lesson 1']];document.getElementById('achievements').innerHTML=all.map(a=>`<div class="achievement ${state.achievements.includes(a[0])?'unlocked':''}"><b>${state.achievements.includes(a[0])?'🏆':'🔒'} ${a[0]}</b><small>${a[1]}</small></div>`).join('')}
 function renderDashboard(){const r=readiness(),b=best(),daily=currentDaily(),weak=weakest();document.getElementById('readiness').textContent=r+'%';document.querySelector('.readiness-ring').style.setProperty('--ring',r+'%');document.getElementById('dailyTitle').textContent=`${Math.min(daily,10)} of 10 questions`;document.getElementById('dailyBar').style.width=Math.min(daily/10*100,100)+'%';document.getElementById('streakBadge').textContent=`${state.streak}-day streak`;document.getElementById('dashBest').textContent=b===null?'—':b+'%';document.getElementById('dashAccuracy').textContent=state.totalAnswered?accuracy()+'%':'—';document.getElementById('dashMissed').textContent=new Set([...state.reviewIds,...state.flaggedIds]).size;document.getElementById('lessonProgress').style.width=(state.lessonComplete?100:state.totalAnswered?65:25)+'%';document.getElementById('lessonBadge').textContent=state.lessonComplete?'Complete':'In progress';document.getElementById('markLesson').textContent=state.lessonComplete?'Lesson Completed ✓':'Mark Lesson Complete';document.getElementById('weakBadge').textContent=weak?weak[0]:'Collecting data';document.getElementById('weakText').textContent=weak?`${pct(weak[1].correct,weak[1].answered)}% accuracy across ${weak[1].answered} questions. An adaptive session will prioritize this area.`:'Complete practice questions to identify your next focus area.'}
 function renderProgress(){document.getElementById('progressReadiness').textContent=readiness()+'%';document.getElementById('progressAttempts').textContent=state.sessions.length;document.getElementById('progressAccuracy').textContent=state.totalAnswered?accuracy()+'%':'—';const box=document.getElementById('topicStats');box.innerHTML='';const topics=Object.keys(state.topics).sort();if(!topics.length)box.innerHTML='<p class="muted">Complete practice questions to see topic performance.</p>';topics.forEach(t=>{const d=state.topics[t],p=pct(d.correct,d.answered);box.innerHTML+=`<div class="topic-row"><div class="topic-line"><strong>${t}</strong><span>${p}% (${d.correct}/${d.answered})</span></div><div class="progress-track"><div style="width:${p}%"></div></div></div>`});const h=document.getElementById('historyList');h.innerHTML=state.sessions.length?'':'<p class="muted">No completed sessions yet.</p>';state.sessions.slice(-8).reverse().forEach(s=>h.innerHTML+=`<div class="history-item"><span>${new Date(s.date).toLocaleDateString()} • ${s.mode||'custom'}</span><strong>${s.score}% • ${s.correct}/${s.total}</strong></div>`);renderAchievements()}
-function renderAll(){renderDashboard();renderProgress();renderCard()}document.getElementById('resetProgress').onclick=()=>{if(confirm('Reset all PMP Academy progress?')){state=empty();save();applyTheme();location.reload()}}
+function renderAll(){renderDashboard();renderProgress();renderCard()}document.getElementById('resetProgress').onclick=()=>{
+ if(confirm('Reset all PMP Academy progress? This removes scores, readiness, streaks, flashcards, review items, achievements, and previous-version data.')){
+   purgeAllProgress();
+   location.reload();
+ }
+}
 checkAchievements();renderAll();renderReview();renderCard();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 })();
 
