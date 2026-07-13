@@ -1,0 +1,19 @@
+{
+  "achievements": [
+    {
+      "id": "first-checkpoint",
+      "name": "Checkpoint Starter",
+      "description": "Complete your first lesson checkpoint."
+    },
+    {
+      "id": "drag-master",
+      "name": "Drag-and-Drop Master",
+      "description": "Complete a drag-and-drop activity perfectly."
+    },
+    {
+      "id": "chapter1",
+      "name": "Chapter 1 Mastery",
+      "description": "Complete Chapter 1 and score at least 80%."
+    }
+  ]
+}

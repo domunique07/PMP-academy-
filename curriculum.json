@@ -1,0 +1,77 @@
+{
+  "version": "4.0-foundation",
+  "source": "Uploaded PMBOK Guide, Eighth Edition (2025)",
+  "chapters": [
+    {
+      "id": "chapter1",
+      "number": "1",
+      "title": "Introduction",
+      "status": "available",
+      "sections": [
+        "1.1",
+        "1.2",
+        "1.3",
+        "1.3.1",
+        "1.3.2",
+        "1.3.3",
+        "1.3.4"
+      ]
+    },
+    {
+      "id": "chapter2",
+      "number": "2",
+      "title": "A System for Value Delivery",
+      "status": "in-progress",
+      "sections": [
+        "2.1",
+        "2.1.1",
+        "2.1.2",
+        "2.2",
+        "2.2.1",
+        "2.2.2",
+        "2.2.3",
+        "2.2.4",
+        "2.2.5",
+        "2.3",
+        "2.4",
+        "2.5"
+      ]
+    },
+    {
+      "id": "chapter3",
+      "number": "3",
+      "title": "Project Management Principles",
+      "status": "planned"
+    },
+    {
+      "id": "chapter4",
+      "number": "4",
+      "title": "Project Life Cycles",
+      "status": "planned"
+    },
+    {
+      "id": "performance-domains",
+      "number": "Guide 2",
+      "title": "Project Management Performance Domains",
+      "status": "planned"
+    },
+    {
+      "id": "tailoring",
+      "number": "Guide 3",
+      "title": "Tailoring",
+      "status": "planned"
+    },
+    {
+      "id": "inputs-outputs",
+      "number": "Guide 4",
+      "title": "Inputs and Outputs",
+      "status": "planned"
+    },
+    {
+      "id": "tools-techniques",
+      "number": "Guide 5",
+      "title": "Tools and Techniques",
+      "status": "planned"
+    }
+  ]
+}

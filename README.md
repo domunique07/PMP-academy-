@@ -1,28 +1,30 @@
-# PMP Academy v3.1 — Progress Reset and Data Cleanup
+# PMP Academy 4.0 Foundation
 
-This update fixes persistent legacy progress and corrupted score data.
+Upload this package to the `development` branch.
 
-## Fixes
+## Architecture
 
-- Uses one storage namespace: `pmpAcademy`
-- Removes all older version keys automatically
-- Reset deletes:
-  - Session history
-  - Best score
-  - Readiness
-  - Topic statistics
-  - Review and flagged questions
-  - Lesson completion
-  - Flashcard mastery
-  - Daily goal and streak
-  - Achievements
-  - Previous-version data
-- Removes cached PMP Academy app data during reset where supported
-- Filters invalid historical sessions, including:
-  - Scores above 100%
-  - Correct counts greater than question totals
-  - Negative or malformed scores
-- Caps readiness and accuracy between 0% and 100%
-- Preserves the fixed one-answer-per-question practice engine from Version 3.0
+- `data/` — curriculum, glossary, achievements
+- `chapters/` — lesson content by PMBOK chapter
+- `questions/` — practice banks by chapter
+- `activities/` — reusable interactions by chapter
+- `app.js` — lesson, practice, activity, and progress engines
 
-Upload and replace every file in the GitHub repository root, including the `icons` folder.
+## Included
+
+- Data-driven lesson renderer
+- Data-driven curriculum
+- Migrated Chapter 1 in exact PMBOK Chapter 1 order
+- Chapter 2 started in order:
+  - 2.1 Creating Value
+  - 2.1.1 Value Delivery Components
+  - 2.1.2 Assessing Project Success
+  - 2.2 Project Environment preview
+- True drag-and-drop matching with iPhone tap fallback
+- Sequencing activity
+- Multiple checkpoints
+- Chapter practice banks
+- Local progress tracking
+- Offline PWA cache
+
+Keep GitHub Pages on `main` while uploading to `development`. To test, temporarily switch Pages to the development branch.

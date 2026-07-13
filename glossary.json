@@ -1,0 +1,64 @@
+{
+  "terms": [
+    {
+      "front": "Project",
+      "back": "A temporary endeavor undertaken to create a unique product, service, or result.",
+      "topic": "Projects and Operations"
+    },
+    {
+      "front": "Operations",
+      "back": "Ongoing activities that sustain products, services, and organizational functions.",
+      "topic": "Projects and Operations"
+    },
+    {
+      "front": "Temporary",
+      "back": "Having a defined beginning and end; it does not necessarily mean short duration.",
+      "topic": "Projects and Operations"
+    },
+    {
+      "front": "Value",
+      "back": "The excess of financial and nonfinancial benefits over the investment used to achieve goals.",
+      "topic": "Value"
+    },
+    {
+      "front": "Project Success",
+      "back": "A consensus that the project delivered value worth the effort and expense.",
+      "topic": "Project Success"
+    },
+    {
+      "front": "Value Delivery System",
+      "back": "The integrated set of portfolios, programs, projects, products, and operations aligned with strategy.",
+      "topic": "Value Delivery System"
+    },
+    {
+      "front": "Program",
+      "back": "Related projects managed in a coordinated manner to obtain benefits not available from managing them separately.",
+      "topic": "Programs and Portfolios"
+    },
+    {
+      "front": "Portfolio",
+      "back": "Programs, projects, and operations managed as a group to achieve strategic objectives and maximize value.",
+      "topic": "Programs and Portfolios"
+    },
+    {
+      "front": "Project Governance",
+      "back": "The framework, functions, and processes that guide authority, decisions, oversight, and value delivery.",
+      "topic": "Governance"
+    },
+    {
+      "front": "Stakeholder",
+      "back": "An individual, group, or organization that can affect, be affected by, or perceive itself to be affected by a project.",
+      "topic": "Roles"
+    },
+    {
+      "front": "Tailoring",
+      "back": "Deliberately adapting the approach, governance, processes, and practices to fit the context.",
+      "topic": "Adaptation"
+    },
+    {
+      "front": "Project Team",
+      "back": "The individuals performing project work to achieve the project's objectives.",
+      "topic": "Roles"
+    }
+  ]
+}

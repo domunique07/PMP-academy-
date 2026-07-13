@@ -1,0 +1,70 @@
+{
+  "questions": [
+    {
+      "id": 1000,
+      "chapter": "chapter2",
+      "section": "2.1",
+      "topic": "Creating Value",
+      "difficulty": "PMP-style",
+      "q": "A project is producing all planned outputs, but stakeholders report that the expected business outcome is unlikely to occur. What should the project manager do first?",
+      "choices": [
+        "Continue because the outputs are on schedule.",
+        "Reassess the link between deliverables, outcomes, benefits, and value with the appropriate stakeholders.",
+        "Close the project immediately.",
+        "Increase reporting frequency without changing the approach."
+      ],
+      "answer": 1,
+      "explanation": "The project manager should assess whether the work still supports the intended outcomes and value before deciding on corrective action.",
+      "whyWrong": [
+        "Output completion alone does not ensure value.",
+        "",
+        "Immediate closure is premature without assessment.",
+        "More reporting does not correct a value misalignment."
+      ]
+    },
+    {
+      "id": 1001,
+      "chapter": "chapter2",
+      "section": "2.1.1",
+      "topic": "Value Delivery Components",
+      "difficulty": "Foundation",
+      "q": "Which set best represents components of a value delivery system?",
+      "choices": [
+        "Only projects and project teams",
+        "Portfolios, programs, projects, products, and operations",
+        "Only sponsors and customers",
+        "Only processes and templates"
+      ],
+      "answer": 1,
+      "explanation": "The value delivery system connects portfolios, programs, projects, products, and operations.",
+      "whyWrong": [
+        "This excludes other value-delivery components.",
+        "",
+        "Roles are important but are not the complete system.",
+        "Processes and templates support work but do not represent the entire system."
+      ]
+    },
+    {
+      "id": 1002,
+      "chapter": "chapter2",
+      "section": "2.1.2",
+      "topic": "Project Success",
+      "difficulty": "PMP-style",
+      "q": "A project is within budget and schedule, but its customers do not accept the result and the expected benefit is not realized. How should success be assessed?",
+      "choices": [
+        "Successful because cost and schedule were met",
+        "Unsuccessful or incomplete because acceptance, outcomes, and value also matter",
+        "Successful if the project manager completed all reports",
+        "Automatically converted into operations"
+      ],
+      "answer": 1,
+      "explanation": "Success is multidimensional and includes stakeholder acceptance, outcomes, benefits, and value.",
+      "whyWrong": [
+        "Cost and schedule alone are insufficient.",
+        "",
+        "Reports do not establish value.",
+        "Classification does not solve the lack of benefit."
+      ]
+    }
+  ]
+}
