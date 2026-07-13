@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#4f1977">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="PMP Academy">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+<title>PMP Academy</title>
+</head>
+<body>
+<div class="app-shell">
+<header class="topbar">
+  <div>
+    <div class="eyebrow">PMBOK® GUIDE, EIGHTH EDITION</div>
+    <h1>PMP Academy</h1>
+  </div>
+  <button id="themeToggle" class="icon-btn" aria-label="Toggle dark mode">◐</button>
+</header>
+
+<nav class="tabs" aria-label="Main navigation">
+  <button data-view="dashboard" class="tab active">Dashboard</button>
+  <button data-view="lesson" class="tab">Lesson 1</button>
+  <button data-view="quiz" class="tab">Quiz</button>
+  <button data-view="flashcards" class="tab">Flashcards</button>
+  <button data-view="progress" class="tab">Progress</button>
+</nav>
+
+<main>
+<section id="dashboard" class="view active">
+  <div class="hero card">
+    <div>
+      <div class="eyebrow">YOUR STUDY HUB</div>
+      <h2>Build the mindset PMI tests.</h2>
+      <p>Study Lesson 1, practice exam-style questions, review flashcards, and track your progress.</p>
+      <button class="primary" data-jump="lesson">Continue Lesson 1</button>
+    </div>
+    <div class="hero-score"><span id="dashScore">—</span><small>best quiz score</small></div>
+  </div>
+  <div class="stats-grid">
+    <article class="card stat"><span id="dashAnswered">0</span><small>questions answered</small></article>
+    <article class="card stat"><span id="dashAccuracy">—</span><small>overall accuracy</small></article>
+    <article class="card stat"><span id="dashCards">0</span><small>flashcards reviewed</small></article>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>Current module</h3><span class="badge">Lesson 1</span></div>
+    <p><strong>Project Management Foundations</strong></p>
+    <p class="muted">Projects, operations, value, success, programs, portfolios, governance, and project roles.</p>
+    <div class="progress-track"><div id="lessonProgress"></div></div>
+  </div>
+</section>
+
+<section id="lesson" class="view">
+  <article class="card lesson-content">
+<h2>Lesson 1: Project Management Foundations</h2>
+<p>This lesson introduces the foundational distinctions and definitions used throughout the PMBOK® Guide, Eighth Edition.</p>
+<div class="lesson-grid">
+<section><h3>Projects</h3><p>Projects are temporary. They have a defined beginning and end and are initiated to produce tangible or intangible deliverables, including products, services, or other results. A project's deliverables may continue to provide benefits after the project ends.</p></section>
+<section><h3>Projects vs. Operations</h3><p>Organizational work includes both projects and operations. Projects are temporary and help create change. Operations are ongoing and sustain products, services, and business functions.</p></section>
+<section><h3>Value</h3><p>Value includes financial and nonfinancial benefits in excess of the investment. Different stakeholders may perceive value differently, so value can be expressed quantitatively or qualitatively.</p></section>
+<section><h3>Project Success</h3><p>Project success is broader than cost, schedule, and scope performance. It reflects whether beneficiaries, stakeholders, and participants believe the project delivered value worth the effort and expense.</p></section>
+<section><h3>Programs and Portfolios</h3><p>Programs coordinate related projects to obtain combined benefits. Portfolios group programs, projects, and operations to achieve strategic objectives and maximize value.</p></section>
+<section><h3>Governance</h3><p>Project governance guides decisions, authority, oversight, alignment, and change. The governance approach should be tailored to the organization, project context, industry, and delivery approach.</p></section>
+</div>
+<div class="exam-alert"><strong>Exam mindset:</strong> When several answers seem reasonable, favor the response that protects value, engages the appropriate stakeholders, supports strategic alignment, and adapts responsibly to the project context.</div>
+</article>
+  <button id="markLesson" class="primary wide">Mark Lesson Complete</button>
+</section>
+
+<section id="quiz" class="view">
+  <div class="card quiz-head">
+    <div><div class="eyebrow">20 QUESTIONS</div><h2>Lesson 1 Quiz</h2><p class="muted">Questions and explanations align with the concepts covered in the uploaded PMBOK® Guide, Eighth Edition.</p></div>
+    <div class="quiz-status"><strong id="quizCount">0/20</strong><small>answered</small></div>
+  </div>
+  <div id="quizContainer"></div>
+  <div id="quizResult" class="card result hidden"></div>
+  <div class="quiz-actions">
+    <button id="submitQuiz" class="primary">Submit Quiz</button>
+    <button id="retakeQuiz" class="secondary">Retake</button>
+  </div>
+</section>
+
+<section id="flashcards" class="view">
+  <div class="card">
+    <div class="card-head"><div><div class="eyebrow">KEY TERMS</div><h2>Flashcards</h2></div><span id="cardCounter" class="badge">1/10</span></div>
+    <button id="flashcard" class="flashcard" aria-label="Flip flashcard">
+      <span id="cardFace">Project</span>
+      <small>Tap to flip</small>
+    </button>
+    <div class="flash-actions">
+      <button id="prevCard" class="secondary">Previous</button>
+      <button id="nextCard" class="primary">Next</button>
+    </div>
+  </div>
+</section>
+
+<section id="progress" class="view">
+  <div class="stats-grid">
+    <article class="card stat"><span id="progressBest">—</span><small>best score</small></article>
+    <article class="card stat"><span id="progressAttempts">0</span><small>quiz attempts</small></article>
+    <article class="card stat"><span id="progressAccuracy">—</span><small>accuracy</small></article>
+  </div>
+  <div class="card">
+    <h3>Topic performance</h3>
+    <div id="topicStats"></div>
+  </div>
+  <button id="resetProgress" class="danger wide">Reset all saved progress</button>
+</section>
+</main>
+
+<footer>Personal PMP study tool • Content summarized from the uploaded PMBOK® Guide, Eighth Edition</footer>
+</div>
+<script>
+window.QUIZ_DATA = [{"topic": "Projects & Operations", "difficulty": "Foundation", "q": "Which statement best defines a project?", "choices": ["An ongoing function that sustains organizational operations", "A temporary endeavor undertaken to create a unique product, service, or result", "A collection of unrelated operational activities", "A permanent organizational department"], "answer": 1, "explanation": "A project is temporary and creates a unique product, service, or result. Temporary means the work has a defined beginning and end."}, {"topic": "Projects & Operations", "difficulty": "Foundation", "q": "Which characteristic most clearly distinguishes a project from operations?", "choices": ["Projects are temporary, while operations are ongoing", "Projects always require external vendors", "Operations never use plans", "Projects always last less than one year"], "answer": 0, "explanation": "Projects are temporary endeavors. Operations are ongoing activities that sustain the organization."}, {"topic": "Projects & Operations", "difficulty": "Foundation", "q": "Which statement about project deliverables is correct?", "choices": ["They must always be physical products", "They may include products, services, or results", "They stop providing benefits when the project ends", "They are limited to financial outputs"], "answer": 1, "explanation": "Projects may create tangible or intangible deliverables, including products, services, or other results. Deliverables may continue to provide benefits after the project ends."}, {"topic": "Projects & Operations", "difficulty": "Exam-style", "q": "An organization performs the same customer billing activities every month. How should this work be classified?", "choices": ["A project because it produces an output", "Operations because it is ongoing and repetitive", "A program because it contains multiple activities", "A portfolio because it supports strategy"], "answer": 1, "explanation": "Recurring billing is ongoing work that sustains the organization, so it is operations rather than a temporary project."}, {"topic": "Value", "difficulty": "Foundation", "q": "What does value mean in the context of the PMBOK\u00ae Guide, Eighth Edition?", "choices": ["The number of activities completed", "The excess of financial and nonfinancial benefits over the investment", "The amount of budget spent", "The length of the project schedule"], "answer": 1, "explanation": "Value is the excess of financial and nonfinancial benefits over the investment used to achieve portfolio, program, or project goals."}, {"topic": "Value", "difficulty": "Exam-style", "q": "A project is on time and within budget, but intended users report that the outcome does not meet their needs. What is the best conclusion?", "choices": ["The project is automatically successful", "The project may not be successful because expected value was not delivered", "The project is successful because cost and schedule are the only measures", "The work should now be classified as operations"], "answer": 1, "explanation": "Project success is not determined only by cost and schedule. Stakeholder needs, intended outcomes, and delivered value also matter."}, {"topic": "Value", "difficulty": "Foundation", "q": "Why may different stakeholders perceive the value of the same project differently?", "choices": ["They may have different needs, expectations, and desired benefits", "Only the sponsor is allowed to define value", "Value is always based only on revenue", "Stakeholders do not influence project success"], "answer": 0, "explanation": "Value can be viewed quantitatively or qualitatively, and stakeholders may emphasize different outcomes or benefits."}, {"topic": "Project Success", "difficulty": "Foundation", "q": "Which statement best describes project success?", "choices": ["Every original activity was completed without change", "Stakeholders and intended beneficiaries agree the project delivered value worth the effort and expense", "The entire approved budget was spent", "No risks occurred during the project"], "answer": 1, "explanation": "Project success is the consensus view that the project delivered value worth its effort and expense."}, {"topic": "Value Delivery System", "difficulty": "Foundation", "q": "Which components may all contribute to an organization's value delivery system?", "choices": ["Only projects", "Only programs and portfolios", "Portfolios, programs, projects, products, and operations", "Only operations"], "answer": 2, "explanation": "Portfolios, programs, projects, products, and operations can all generate value individually and collectively."}, {"topic": "Programs & Portfolios", "difficulty": "Foundation", "q": "What is a program?", "choices": ["A group of related projects managed in a coordinated manner to obtain benefits not available from managing them separately", "A single large project", "A collection of unrelated operations", "A list of project activities"], "answer": 0, "explanation": "Programs coordinate related projects to obtain benefits and control that would not be available if the projects were managed separately."}, {"topic": "Programs & Portfolios", "difficulty": "Foundation", "q": "What is a portfolio?", "choices": ["A collection of programs, projects, and operations managed as a group to achieve strategic objectives", "A single project's schedule and budget", "A group containing only related projects", "A department's routine procedures"], "answer": 0, "explanation": "A portfolio groups programs, projects, and operations to support strategic objectives and maximize value."}, {"topic": "Programs & Portfolios", "difficulty": "Foundation", "q": "Which sequence moves from the broadest grouping to the most specific?", "choices": ["Project \u2192 Program \u2192 Portfolio", "Portfolio \u2192 Program \u2192 Project", "Program \u2192 Portfolio \u2192 Project", "Operations \u2192 Portfolio \u2192 Project"], "answer": 1, "explanation": "A portfolio may contain programs, and programs may contain related projects."}, {"topic": "Governance", "difficulty": "Foundation", "q": "What does project governance provide?", "choices": ["A framework, functions, and processes that guide decisions and activities toward value delivery", "Only a project calendar", "Only the project manager's job description", "A replacement for stakeholder engagement"], "answer": 0, "explanation": "Project governance guides decision-making, authority, oversight, alignment, and activities to optimize project value delivery."}, {"topic": "Governance", "difficulty": "Exam-style", "q": "A small adaptive project is being managed with the same extensive controls used for a large regulated program. What should the project manager do?", "choices": ["Keep every control because governance must be identical", "Tailor governance to the project's context while preserving necessary oversight", "Remove all governance because the approach is adaptive", "Transfer governance responsibility to the customer"], "answer": 1, "explanation": "Governance should be tailored to the project approach, industry, organization, complexity, and specific context."}, {"topic": "Governance", "difficulty": "Foundation", "q": "What can result from excessive governance?", "choices": ["Unnecessary use of resources and slower decision-making", "Automatic delivery of more value", "Elimination of stakeholder needs", "Conversion of the project into a portfolio"], "answer": 0, "explanation": "Too much governance can waste resources and create unnecessary overhead."}, {"topic": "Governance", "difficulty": "Foundation", "q": "What can result from insufficient governance?", "choices": ["Guaranteed early completion", "Strategic misalignment and project performance problems", "Automatic cost savings", "Elimination of uncertainty"], "answer": 1, "explanation": "Too little governance may lead to unclear authority, weak oversight, misalignment, and performance issues."}, {"topic": "Roles", "difficulty": "Foundation", "q": "Who may perform project management responsibilities?", "choices": ["Only someone formally titled Project Manager", "Different roles depending on the governance structure and project context", "Only the sponsor", "Only a certified portfolio manager"], "answer": 1, "explanation": "Project management functions may be performed by project managers, functional managers, team leads, product owners, and others depending on context."}, {"topic": "Roles", "difficulty": "Foundation", "q": "What matters more than the formal job title of the person overseeing a project?", "choices": ["The size of the person's department", "The characteristics of the project and proper fulfillment of project management functions", "The person's office location", "The number of direct reports"], "answer": 1, "explanation": "The guide emphasizes the project's characteristics and performance of project management functions rather than a specific title."}, {"topic": "Projects & Operations", "difficulty": "Exam-style", "q": "A project is approaching completion. Its deliverables will be supported by an operations team. What should the project manager do?", "choices": ["Delay all operations involvement until after closing", "Coordinate transfer of deliverables, knowledge, and resources to operations", "Keep all project knowledge within the project team", "Convert the project into a portfolio"], "answer": 1, "explanation": "Projects commonly transfer deliverables, resources, and knowledge to operations so outcomes can be implemented and sustained."}, {"topic": "Value", "difficulty": "Exam-style", "q": "A team must choose between two solutions. One offers more features, while the other better supports strategic objectives and stakeholder needs. What should guide the decision?", "choices": ["Choose the option with the most features", "Choose the option expected to deliver the greatest overall value", "Choose whichever option was proposed first", "Choose the option requiring the most resources"], "answer": 1, "explanation": "Project decisions should be guided by strategic alignment, stakeholder needs, expected benefits, and overall value."}];
+window.FLASHCARDS = [["Project", "A temporary endeavor undertaken to create a unique product, service, or result."], ["Operations", "Ongoing activities that sustain an organization and its normal business functions."], ["Value", "The excess of financial and nonfinancial benefits over the investment used to achieve goals."], ["Project Success", "A consensus that the project delivered value worth the effort and expense."], ["Program", "Related projects managed in a coordinated manner to obtain benefits not available from managing them separately."], ["Portfolio", "Programs, projects, and operations managed as a group to achieve strategic objectives and maximize value."], ["Project Governance", "The framework, functions, and processes that guide decisions and activities to optimize value delivery."], ["Project Team", "Individuals performing project work to achieve project objectives."], ["Temporary", "Having a defined beginning and end; not necessarily short in duration."], ["Value Delivery System", "An integrated set of portfolios, programs, projects, products, and operations aligned with strategy."]];
+</script>
+<script src="app.js"></script>
+</body>
+</html>
