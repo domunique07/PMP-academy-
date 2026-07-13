@@ -3,7 +3,7 @@
   "short_name": "PMP Academy",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f5f2f8",
+  "background_color": "#15101b",
   "theme_color": "#551f7c",
   "icons": [
     {

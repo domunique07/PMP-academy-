@@ -1,28 +1,51 @@
-# PMP Academy v1.1
+# PMP Academy v2.0
 
-Mobile-first GitHub Pages study app for Lesson 1 concepts from the PMBOK® Guide, Eighth Edition.
+A mobile-first PMP study platform built around the uploaded PMBOK® Guide, Eighth Edition (2025).
 
-## Version 1.1 features
+## Version 2.0 additions
 
-- Expanded Lesson 1 notes and exam tips
-- 40-question PMBOK-aligned bank
-- Custom 10/20/30/40-question sessions
-- Randomized questions and answer order
-- Immediate grading
-- Correct-answer explanations
-- Explanations for why incorrect choices are weaker
-- Missed-question and flagged-question review queue
-- Progress saved after each answer
-- Daily 10-question goal and study streak
-- Readiness score
-- Weak-topic detection
-- Topic analytics
-- Flashcard shuffle, mastery, and unmastered-only mode
-- Dark mode and PWA support
+- Curriculum map aligned to the Eighth Edition
+- Six project management principles roadmap
+- Five Project Management Focus Areas roadmap
+- Seven Project Performance Domains roadmap
+- Tailoring, Inputs and Outputs, and Tools and Techniques roadmap
+- Clear explanation that Focus Areas overlap and are not project phases
+- Preserves all Version 1.2 Lesson 1 features:
+  - 50 PMBOK-aligned questions
+  - Adaptive practice
+  - Explanations for every choice
+  - Review queue
+  - Flashcards
+  - Readiness, streaks, achievements, and progress tracking
+  - Offline PWA support
 
-## Update GitHub Pages
+## PMBOK structure represented in the app
 
-Upload and replace all files in the repository root, including the `icons` folder. Commit to `main`. GitHub Pages will redeploy automatically.
+- Foundations and value delivery
+- Six principles:
+  - Adopt a Holistic View
+  - Focus on Value
+  - Embed Quality Into Processes and Deliverables
+  - Be an Accountable Leader
+  - Integrate Sustainability Within All Project Areas
+  - Build an Empowered Culture
+- Life cycles and development approaches
+- Five Focus Areas:
+  - Initiating
+  - Planning
+  - Executing
+  - Monitoring and Controlling
+  - Closing
+- Seven Performance Domains:
+  - Governance
+  - Scope
+  - Schedule
+  - Finance
+  - Stakeholders
+  - Resources
+  - Risk
+- Tailoring
+- Inputs and Outputs
+- Tools and Techniques
 
-Site URL:
-`https://domunique07.github.io/PMP-academy-/`
+Upload and replace every file in the GitHub repository root, including the `icons` folder.
