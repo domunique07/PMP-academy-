@@ -1,30 +1,28 @@
-# PMP Academy
+# PMP Academy v1.1
 
-A mobile-first static Progressive Web App for studying Lesson 1 concepts from the uploaded PMBOK® Guide, Eighth Edition.
+Mobile-first GitHub Pages study app for Lesson 1 concepts from the PMBOK® Guide, Eighth Edition.
 
-## Publish with GitHub Pages
+## Version 1.1 features
 
-1. Upload every file and folder in this package to the repository root.
-2. In GitHub, open **Settings → Pages**.
-3. Under **Build and deployment**, choose **Deploy from a branch**.
-4. Select the **main** branch and **/(root)** folder, then save.
-5. GitHub will display the published site URL after deployment.
+- Expanded Lesson 1 notes and exam tips
+- 40-question PMBOK-aligned bank
+- Custom 10/20/30/40-question sessions
+- Randomized questions and answer order
+- Immediate grading
+- Correct-answer explanations
+- Explanations for why incorrect choices are weaker
+- Missed-question and flagged-question review queue
+- Progress saved after each answer
+- Daily 10-question goal and study streak
+- Readiness score
+- Weak-topic detection
+- Topic analytics
+- Flashcard shuffle, mastery, and unmastered-only mode
+- Dark mode and PWA support
 
-Expected URL for this repository:
+## Update GitHub Pages
 
+Upload and replace all files in the repository root, including the `icons` folder. Commit to `main`. GitHub Pages will redeploy automatically.
+
+Site URL:
 `https://domunique07.github.io/PMP-academy-/`
-
-## Features
-
-- Dashboard
-- Lesson 1 notes
-- 20-question interactive quiz
-- Immediate feedback and explanations
-- Flashcards
-- Local progress tracking
-- Topic statistics
-- Dark mode
-- Installable PWA behavior
-- Offline caching after the first successful load
-
-Progress is saved only in the current browser using localStorage.
