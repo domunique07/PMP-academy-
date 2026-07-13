@@ -20,3 +20,17 @@ body.dark{--bg:#15101b;--surface:#211828;--surface2:#2c2135;--text:#f7f0fa;--mut
 
 .curriculum-hero h2{font-size:34px;margin:8px 0}.roadmap-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.roadmap{position:relative}.roadmap h3{font-size:22px;margin:10px 0}.roadmap ul{padding-left:20px}.module-number{font-size:12px;font-weight:900;letter-spacing:.12em;color:var(--primary2)}.roadmap.locked{opacity:.72}.roadmap.locked:after{content:"Coming soon";position:absolute;top:18px;right:18px;font-size:11px;font-weight:900;color:var(--muted)}.active-module{border:2px solid var(--primary2)}.architecture-flow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:16px 0}.architecture-flow span{background:var(--primary);color:white;padding:10px 12px;border-radius:12px}.architecture-flow b{color:var(--primary2)}
 @media(max-width:700px){.roadmap-grid{grid-template-columns:1fr}.curriculum-hero h2{font-size:30px}}
+
+.card-inset{padding:14px;border:1px solid var(--border);border-radius:14px;background:var(--surface2)}
+.term-grid,.relationship-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:14px 0}
+.term-grid>div,.relationship-cards article{padding:14px;border:1px solid var(--border);border-radius:14px;background:var(--surface2)}
+.term-grid strong,.term-grid span,.relationship-cards strong,.relationship-cards span{display:block}
+.term-grid span,.relationship-cards span{margin-top:6px;color:var(--muted)}
+.checkpoint{padding:15px;border:1px solid var(--border);border-radius:14px;background:var(--surface2);margin-top:14px}
+.checkpoint button{display:block;width:100%;text-align:left;margin:8px 0;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text)}
+.mini-feedback{margin-top:8px;font-weight:800}.mini-feedback.ok{color:var(--good)}.mini-feedback.no{color:var(--bad)}
+.figure-study{padding:16px;border:2px solid var(--primary2);border-radius:16px;margin-top:16px;background:var(--surface2)}
+.figure-title{font-weight:900;font-size:18px}.match-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+.match-label{padding:12px;border:1px solid var(--primary);border-radius:12px;background:var(--surface);color:var(--primary);font-weight:900}
+.match-label.active{background:var(--primary);color:#fff}.figure-definition{padding:13px;border-radius:12px;background:var(--surface);border:1px solid var(--border)}
+@media(max-width:700px){.term-grid,.relationship-cards,.match-grid{grid-template-columns:1fr}}

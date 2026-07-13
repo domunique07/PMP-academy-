@@ -1,51 +1,28 @@
-# PMP Academy v2.0
+# PMP Academy v3.0 — Chapter 1 Rebuild
 
-A mobile-first PMP study platform built around the uploaded PMBOK® Guide, Eighth Edition (2025).
+This release rebuilds Lesson 1 to follow Chapter 1 of The Standard for Project Management in the uploaded PMBOK® Guide, Eighth Edition.
 
-## Version 2.0 additions
+## Chapter order represented
 
-- Curriculum map aligned to the Eighth Edition
-- Six project management principles roadmap
-- Five Project Management Focus Areas roadmap
-- Seven Project Performance Domains roadmap
-- Tailoring, Inputs and Outputs, and Tools and Techniques roadmap
-- Clear explanation that Focus Areas overlap and are not project phases
-- Preserves all Version 1.2 Lesson 1 features:
-  - 50 PMBOK-aligned questions
-  - Adaptive practice
-  - Explanations for every choice
-  - Review queue
-  - Flashcards
-  - Readiness, streaks, achievements, and progress tracking
-  - Offline PWA support
+- 1.1 Purpose of The Standard for Project Management
+- 1.2 Key Terms and Concepts
+- 1.3 Foundational Elements of Project Management
+  - 1.3.1 Characteristics of a Project
+  - 1.3.2 Connecting Organizational Governance and Project Governance
+  - 1.3.3 Operations and Project Management
+  - 1.3.4 Relationship of Portfolio, Program, Project, and Operations Management
 
-## PMBOK structure represented in the app
+## Features
 
-- Foundations and value delivery
-- Six principles:
-  - Adopt a Holistic View
-  - Focus on Value
-  - Embed Quality Into Processes and Deliverables
-  - Be an Accountable Leader
-  - Integrate Sustainability Within All Project Areas
-  - Build an Empowered Culture
-- Life cycles and development approaches
-- Five Focus Areas:
-  - Initiating
-  - Planning
-  - Executing
-  - Monitoring and Controlling
-  - Closing
-- Seven Performance Domains:
-  - Governance
-  - Scope
-  - Schedule
-  - Finance
-  - Stakeholders
-  - Resources
-  - Risk
-- Tailoring
-- Inputs and Outputs
-- Tools and Techniques
+- Comprehensive chapter and subchapter lessons
+- PMI-thinking and exam-trap callouts
+- Interactive subsection checkpoint
+- Interactive relationship figure practice
+- PMP-style practice bank
+- Reliable single-score answer records
+- Correct/incorrect color restoration when revisiting questions
+- Missed-question reconciliation into Review
+- Adaptive practice, flashcards, progress, streaks, and achievements
+- Offline PWA support
 
-Upload and replace every file in the GitHub repository root, including the `icons` folder.
+Upload all files to the repository root and replace the prior versions.

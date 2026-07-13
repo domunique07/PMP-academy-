@@ -1,10 +1,10 @@
 
 (function(){
 'use strict';
-const BANK=window.QUESTION_BANK,CARDS=window.FLASHCARDS,KEY='pmpAcademyV20';
+const BANK=window.QUESTION_BANK,CARDS=window.FLASHCARDS,KEY='pmpAcademyV30';
 const today=()=>new Date().toISOString().slice(0,10);
 const empty=()=>({theme:'dark',lessonComplete:false,totalAnswered:0,totalCorrect:0,sessions:[],topics:{},reviewIds:[],flaggedIds:[],daily:{},streak:0,lastGoalDate:null,mastered:[],cardReviews:0,achievements:[]});
-let old=null;try{old=JSON.parse(localStorage.getItem('pmpAcademyV12')||'null')}catch(e){}
+let old=null;try{old=JSON.parse(localStorage.getItem('pmpAcademyV20')||localStorage.getItem('pmpAcademyV12')||'null')}catch(e){}
 let state=load();if(old&&state.totalAnswered===0){state=Object.assign(empty(),old);saveRaw()}
 let session=null,mode='custom',cardOrder=CARDS.map((_,i)=>i),cardPos=0,cardBack=false,strikeMode=false;
 function load(){try{return Object.assign(empty(),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return empty()}}
@@ -30,17 +30,107 @@ function shuffled(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Ma
 document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('.mode').forEach(x=>x.classList.toggle('selected',x===b));document.getElementById('topicLabel').classList.toggle('hidden',mode==='adaptive')})
 function weakest(){const entries=Object.entries(state.topics).filter(([,d])=>d.answered>=2);if(!entries.length)return null;return entries.sort((a,b)=>pct(a[1].correct,a[1].answered)-pct(b[1].correct,b[1].answered))[0]}
 function buildAdaptive(n){const weak=weakest();let weighted=[];BANK.forEach((q,i)=>{let w=1;if(weak&&q.topic===weak[0])w=5;else if(state.topics[q.topic])w=Math.max(1,4-Math.floor(pct(state.topics[q.topic].correct,state.topics[q.topic].answered)/25));for(let k=0;k<w;k++)weighted.push(i)});let chosen=[];while(chosen.length<Math.min(n,BANK.length)&&weighted.length){const i=weighted[Math.floor(Math.random()*weighted.length)];if(!chosen.includes(i))chosen.push(i)}return chosen.map(i=>({...BANK[i],id:i}))}
-function startPractice(forceAdaptive=false,forceTopic=null){if(forceAdaptive)mode='adaptive';const n=Number(document.getElementById('questionCount').value||20);let pool;if(mode==='adaptive')pool=buildAdaptive(n);else{const topic=forceTopic||document.getElementById('topicFilter').value;pool=shuffled(BANK.map((q,i)=>({...q,id:i})).filter(q=>topic==='All'||q.topic===topic)).slice(0,n)}const randomAnswers=document.getElementById('shuffleAnswers').checked;pool=pool.map(q=>({...q,displayChoices:randomAnswers?shuffled(q.choices.map((c,i)=>({text:c,orig:i}))):q.choices.map((c,i)=>({text:c,orig:i}))}));session={questions:pool,pos:0,correct:0,answered:0,results:[],started:Date.now(),locked:false,answers:{}};document.getElementById('practiceSetup').classList.add('hidden');document.getElementById('practiceSession').classList.remove('hidden');document.getElementById('sessionResult').classList.add('hidden');showView('practice');renderQuestion()}
+function startPractice(forceAdaptive=false,forceTopic=null){if(forceAdaptive)mode='adaptive';const n=Number(document.getElementById('questionCount').value||20);let pool;if(mode==='adaptive')pool=buildAdaptive(n);else{const topic=forceTopic||document.getElementById('topicFilter').value;pool=shuffled(BANK.map((q,i)=>({...q,id:i})).filter(q=>topic==='All'||q.topic===topic)).slice(0,n)}const randomAnswers=document.getElementById('shuffleAnswers').checked;pool=pool.map(q=>({...q,displayChoices:randomAnswers?shuffled(q.choices.map((c,i)=>({text:c,orig:i}))):q.choices.map((c,i)=>({text:c,orig:i}))}));session={questions:pool,pos:0,results:[],started:Date.now(),locked:false,answers:{}};document.getElementById('practiceSetup').classList.add('hidden');document.getElementById('practiceSession').classList.remove('hidden');document.getElementById('sessionResult').classList.add('hidden');showView('practice');renderQuestion()}
 document.getElementById('beginPractice').onclick=()=>startPractice();document.getElementById('adaptiveStart').onclick=()=>startPractice(true);document.getElementById('weakPractice').onclick=()=>{const w=weakest();if(w){mode='custom';startPractice(false,w[0])}else startPractice(true)}
-function renderQuestion(){const q=session.questions[session.pos],card=document.getElementById('questionCard'),saved=session.answers[session.pos];document.getElementById('sessionTitle').textContent=`Question ${session.pos+1}`;document.getElementById('sessionProgress').textContent=`${session.pos+1}/${session.questions.length}`;document.getElementById('sessionLive').textContent=`${session.correct} correct`;document.getElementById('flagQuestion').textContent=state.flaggedIds.includes(q.id)?'★ Flagged':'☆ Flag';document.getElementById('previousQuestion').disabled=session.pos===0;document.getElementById('nextQuestion').textContent=session.pos===session.questions.length-1?'Finish Session':'Next Question';card.innerHTML=`<div class="meta"><span>${q.topic}</span><span>${q.difficulty}</span></div><h3>${q.q}</h3><div id="choices">${q.displayChoices.map((c,i)=>`<button class="option" data-orig="${c.orig}"><strong>${String.fromCharCode(65+i)}.</strong> ${c.text}</button>`).join('')}</div><div id="feedback"></div>`;session.locked=!!saved;if(saved)applySaved(saved,q);strikeMode=false;document.getElementById('strikeToggle').classList.remove('active')}
-function applySaved(saved,q){document.querySelectorAll('.option').forEach(o=>{const orig=Number(o.dataset.orig);o.classList.add(orig===q.answer?'correct':orig===saved.picked?'incorrect':'')});renderFeedback(saved.ok,q)}
+function sessionStats(){
+ const answers=Object.values(session.answers||{});
+ return {answered:answers.length,correct:answers.filter(a=>a.ok).length};
+}
+function renderQuestion(){
+ const q=session.questions[session.pos],card=document.getElementById('questionCard'),saved=session.answers[session.pos];
+ const stats=sessionStats();
+ document.getElementById('sessionTitle').textContent=`Question ${session.pos+1}`;
+ document.getElementById('sessionProgress').textContent=`${session.pos+1}/${session.questions.length}`;
+ document.getElementById('sessionLive').textContent=`${stats.correct} correct`;
+ document.getElementById('flagQuestion').textContent=state.flaggedIds.includes(q.id)?'★ Flagged':'☆ Flag';
+ document.getElementById('previousQuestion').disabled=session.pos===0;
+ document.getElementById('nextQuestion').textContent=session.pos===session.questions.length-1?'Finish Session':'Next Question';
+ card.innerHTML=`<div class="meta"><span>${q.topic}</span><span>${q.difficulty}</span></div><h3>${q.q}</h3><div id="choices">${q.displayChoices.map((c,i)=>`<button type="button" class="option" data-orig="${c.orig}"><strong>${String.fromCharCode(65+i)}.</strong> ${c.text}</button>`).join('')}</div><div id="feedback"></div>`;
+ session.locked=Boolean(saved);
+ strikeMode=false;
+ document.getElementById('strikeToggle').classList.remove('active');
+ if(saved) applySaved(saved,q);
+}
+function applySaved(saved,q){
+ document.querySelectorAll('.option').forEach(o=>{
+   const orig=Number(o.dataset.orig);
+   o.classList.remove('correct','incorrect');
+   if(orig===q.answer) o.classList.add('correct');
+   else if(orig===saved.picked) o.classList.add('incorrect');
+   o.disabled=true;
+ });
+ renderFeedback(saved.ok,q,saved.picked);
+}
 function renderFeedback(ok,q,picked){const fb=document.getElementById('feedback');fb.className='feedback '+(ok?'good':'bad');let analysis=`<div class="analysis-box"><strong>Question clue:</strong> ${q.clue}<br><strong>Related lesson:</strong> ${q.lesson}</div>`;if(ok)fb.innerHTML=`<strong>Correct.</strong> ${q.explanation}${analysis}`;else{let rows=q.choices.map((c,i)=>`<li><strong>${c}:</strong> ${i===q.answer?'Correct — '+q.explanation:q.whyWrong[i]}</li>`).join('');fb.innerHTML=`<strong>Incorrect.</strong> Best answer: <strong>${q.choices[q.answer]}</strong><ul>${rows}</ul>${analysis}`}}
-document.getElementById('questionCard').addEventListener('click',e=>{const btn=e.target.closest('.option');if(!btn)return;if(strikeMode&&!session.locked){btn.classList.toggle('struck');return}if(session.locked)return;session.locked=true;haptic();const q=session.questions[session.pos],picked=Number(btn.dataset.orig),ok=picked===q.answer;session.answered++;if(ok)session.correct++;document.querySelectorAll('.option').forEach(o=>{const orig=Number(o.dataset.orig);o.classList.add(orig===q.answer?'correct':orig===picked?'incorrect':'')});renderFeedback(ok,q,picked);session.answers[session.pos]={picked,ok};session.results.push({id:q.id,ok,picked,topic:q.topic});state.totalAnswered++;if(ok)state.totalCorrect++;state.topics[q.topic]=state.topics[q.topic]||{answered:0,correct:0};state.topics[q.topic].answered++;if(ok)state.topics[q.topic].correct++;state.daily[today()]=(state.daily[today()]||0)+1;if(!ok&&!state.reviewIds.includes(q.id))state.reviewIds.push(q.id);updateStreak();checkAchievements();save()})
+document.getElementById('questionCard').addEventListener('click',e=>{
+ const btn=e.target.closest('.option');
+ if(!btn || !session) return;
+ if(strikeMode && !session.locked){btn.classList.toggle('struck');return}
+ if(session.answers[session.pos]) return;
+
+ const q=session.questions[session.pos],picked=Number(btn.dataset.orig),ok=picked===q.answer;
+ session.answers[session.pos]={id:q.id,picked,ok,topic:q.topic};
+ session.locked=true;
+ haptic();
+
+ document.querySelectorAll('.option').forEach(o=>{
+   const orig=Number(o.dataset.orig);
+   o.classList.remove('correct','incorrect');
+   if(orig===q.answer) o.classList.add('correct');
+   else if(orig===picked) o.classList.add('incorrect');
+   o.disabled=true;
+ });
+ renderFeedback(ok,q,picked);
+
+ // Persist lifetime statistics exactly once for this question.
+ state.totalAnswered++;
+ if(ok) state.totalCorrect++;
+ state.topics[q.topic]=state.topics[q.topic]||{answered:0,correct:0};
+ state.topics[q.topic].answered++;
+ if(ok) state.topics[q.topic].correct++;
+ state.daily[today()]=(state.daily[today()]||0)+1;
+
+ if(!ok && !state.reviewIds.includes(q.id)) state.reviewIds.push(q.id);
+ updateStreak();
+ checkAchievements();
+ save();
+
+ const stats=sessionStats();
+ document.getElementById('sessionLive').textContent=`${stats.correct} correct`;
+})
 document.getElementById('strikeToggle').onclick=()=>{if(session&&session.locked)return;strikeMode=!strikeMode;document.getElementById('strikeToggle').classList.toggle('active',strikeMode)}
 document.getElementById('flagQuestion').onclick=()=>{const id=session.questions[session.pos].id,i=state.flaggedIds.indexOf(id);if(i>=0)state.flaggedIds.splice(i,1);else state.flaggedIds.push(id);save();document.getElementById('flagQuestion').textContent=state.flaggedIds.includes(id)?'★ Flagged':'☆ Flag'}
 document.getElementById('previousQuestion').onclick=()=>{if(session.pos>0){session.pos--;renderQuestion()}}
-document.getElementById('nextQuestion').onclick=()=>{if(!session.locked){alert('Select an answer before continuing.');return}if(session.pos<session.questions.length-1){session.pos++;renderQuestion();window.scrollTo({top:0,behavior:'smooth'})}else finishSession()}
-function finishSession(){const score=pct(session.correct,session.questions.length);state.sessions.push({date:new Date().toISOString(),score,correct:session.correct,total:session.questions.length,duration:Math.round((Date.now()-session.started)/1000),mode});checkAchievements();save();document.getElementById('practiceSession').classList.add('hidden');const r=document.getElementById('sessionResult');r.classList.remove('hidden');r.innerHTML=`<h2>${score}%</h2><p>${session.correct} of ${session.questions.length} correct</p><p>${score>=90?'Excellent performance.':score>=75?'Good foundation. Review the missed questions.':'Review Lesson 1 and complete a targeted session.'}</p><div class="button-row"><button class="secondary" data-new>New Session</button><button class="primary" data-review>Review Missed</button></div>`;if(score>=90)confetti();r.querySelector('[data-new]').onclick=()=>{document.getElementById('practiceSetup').classList.remove('hidden');r.classList.add('hidden')};r.querySelector('[data-review]').onclick=()=>showView('review')}
+document.getElementById('nextQuestion').onclick=()=>{if(!session.answers[session.pos]){alert('Select an answer before continuing.');return}if(session.pos<session.questions.length-1){session.pos++;renderQuestion();window.scrollTo({top:0,behavior:'smooth'})}else finishSession()}
+function finishSession(){
+ const stats=sessionStats();
+ const total=session.questions.length;
+ const score=pct(stats.correct,total);
+
+ // Reconcile review queue from the final answer map in case the user navigated backward/forward.
+ Object.values(session.answers).forEach(a=>{
+   if(!a.ok && !state.reviewIds.includes(a.id)) state.reviewIds.push(a.id);
+ });
+
+ state.sessions.push({
+   date:new Date().toISOString(),
+   score,
+   correct:stats.correct,
+   total,
+   duration:Math.round((Date.now()-session.started)/1000),
+   mode
+ });
+ checkAchievements();
+ save();
+
+ document.getElementById('practiceSession').classList.add('hidden');
+ const r=document.getElementById('sessionResult');
+ r.classList.remove('hidden');
+ r.innerHTML=`<h2>${score}%</h2><p>${stats.correct} of ${total} correct</p><p>${score>=90?'Excellent performance.':score>=75?'Good foundation. Review the missed questions.':'Review Lesson 1 and complete a targeted session.'}</p><div class="button-row"><button class="secondary" data-new>New Session</button><button class="primary" data-review>Review Missed</button></div>`;
+ if(score>=90) confetti();
+ r.querySelector('[data-new]').onclick=()=>{document.getElementById('practiceSetup').classList.remove('hidden');r.classList.add('hidden')};
+ r.querySelector('[data-review]').onclick=()=>showView('review');
+}
 function renderReview(){const ids=[...new Set([...state.reviewIds,...state.flaggedIds])],box=document.getElementById('reviewList');box.innerHTML='';if(!ids.length){box.innerHTML='<p class="muted">Your review queue is empty.</p>';return}ids.forEach(id=>{const q=BANK[id],d=document.createElement('div');d.className='review-item';d.innerHTML=`<div class="meta"><span>${q.topic}</span><span>${state.flaggedIds.includes(id)?'Flagged':'Missed'}</span></div><h4>${q.q}</h4><p class="answer">${q.choices[q.answer]}</p><p>${q.explanation}</p><details><summary>Why the other choices are weaker</summary><ul>${q.choices.map((c,i)=>i===q.answer?'':`<li><strong>${c}:</strong> ${q.whyWrong[i]}</li>`).join('')}</ul></details><div class="analysis-box"><strong>Question clue:</strong> ${q.clue}<br><strong>PMI mindset:</strong> Understand first, engage the right people, follow governance, and protect value.<br><strong>Related section:</strong> ${q.lesson}</div><button class="secondary" data-remove="${id}">Mark Reviewed</button>`;box.appendChild(d)});box.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{const id=Number(b.dataset.remove);state.reviewIds=state.reviewIds.filter(x=>x!==id);state.flaggedIds=state.flaggedIds.filter(x=>x!==id);save();renderReview()})}
 document.getElementById('clearReview').onclick=()=>{state.reviewIds=[];state.flaggedIds=[];save();renderReview()}
 function activeCards(){return document.getElementById('unmasteredOnly').checked?cardOrder.filter(i=>!state.mastered.includes(i)):cardOrder}
@@ -54,3 +144,27 @@ function renderProgress(){document.getElementById('progressReadiness').textConte
 function renderAll(){renderDashboard();renderProgress();renderCard()}document.getElementById('resetProgress').onclick=()=>{if(confirm('Reset all PMP Academy progress?')){state=empty();save();applyTheme();location.reload()}}
 checkAchievements();renderAll();renderReview();renderCard();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 })();
+
+document.addEventListener('click',function(e){
+ const mini=e.target.closest('[data-mini]');
+ if(mini){
+   const box=mini.closest('.checkpoint');
+   const fb=box.querySelector('.mini-feedback');
+   const ok=mini.dataset.mini==='correct';
+   fb.className='mini-feedback '+(ok?'ok':'no');
+   fb.textContent=ok?'Correct — the Standard is broadly applicable and tailored to context.':'Not quite — the Standard does not prescribe one mandatory life cycle.';
+ }
+ const rel=e.target.closest('.match-label');
+ if(rel){
+   document.querySelectorAll('.match-label').forEach(b=>b.classList.remove('active'));
+   rel.classList.add('active');
+   const defs={
+     portfolio:'Portfolio management selects, prioritizes, and balances investments to support strategy and maximize value.',
+     program:'Program management coordinates related projects and activities to achieve combined benefits.',
+     project:'Project management directs a temporary endeavor that creates a unique product, service, or result.',
+     operations:'Operations management sustains ongoing products, services, and business functions.'
+   };
+   const target=document.getElementById('relationshipDefinition');
+   if(target) target.textContent=defs[rel.dataset.rel];
+ }
+});
